@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+httpx
+pytest
+sounddevice; sys_platform == "win32"
+pycaw; sys_platform == "win32"

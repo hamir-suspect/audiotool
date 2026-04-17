@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+venv/
+.venv/
+
+# Config (generated at runtime)
+config.json
+
+# Audio / generated samples
+samples/
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.m4a
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/

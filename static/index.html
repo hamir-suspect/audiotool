@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Router</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Audio Router</h1>
+
+    <section id="loopback-control">
+        <h2>Loopback Control</h2>
+        <div id="mode-row" class="control-row">
+            <label for="mode-select">Mode:</label>
+            <select id="mode-select">
+                <option value="virtual-sink">Virtual Sink</option>
+                <option value="sink-capture">Sink Capture</option>
+            </select>
+        </div>
+        <div id="sink-group" class="control-row" style="display:none">
+            <label for="sink-select">Sink:</label>
+            <select id="sink-select"></select>
+        </div>
+        <div id="cable-select-group" class="control-row" style="display:none">
+            <label for="cable-select">Virtual Cable:</label>
+            <select id="cable-select"></select>
+        </div>
+        <div id="loopback-buttons" class="control-row">
+            <button id="btn-start" onclick="startLoopback()">Start</button>
+            <button id="btn-stop" onclick="stopLoopback()" disabled>Stop</button>
+            <span id="loopback-status" class="status-off">Stopped</span>
+        </div>
+    </section>
+
+    <section id="volume-control">
+        <h2>Volume</h2>
+        <div class="control-row">
+            <input type="range" id="volume-slider" min="0" max="500" value="300">
+            <span id="volume-value">300%</span>
+        </div>
+    </section>
+
+    <section id="audio-files">
+        <h2>Audio Files</h2>
+        <ul id="file-list"></ul>
+    </section>
+
+    <section id="conversation-control">
+        <h2>Conversation Mode</h2>
+        <div class="control-row">
+            <select id="conversation-select"></select>
+            <button id="btn-conv-start" onclick="startConversation()">Start Conversation</button>
+            <button onclick="prepareConversation()">Prepare Mics</button>
+        </div>
+    </section>
+
+    <section id="generate-conversation">
+        <h2>Generate Conversation <button id="generate-toggle" onclick="toggleGenerate()" class="toggle-btn">&#9660;</button></h2>
+        <div id="generate-panel" style="display:none">
+
+            <div id="gen-step-indicator" class="step-indicator">
+                <span class="step-pill active" data-step="1">1. Transcript</span>
+                <span class="step-pill" data-step="2">2. Edit</span>
+                <span class="step-pill" data-step="3">3. Generate</span>
+            </div>
+
+            <!-- Step 1: Source -->
+            <div id="gen-step-1">
+                <div class="setting-row">
+                    <label for="gen-name">Conversation Name</label>
+                    <input type="text" id="gen-name" placeholder="my-conversation">
+                </div>
+                <div class="control-row" style="margin-top:0.5rem">
+                    <button onclick="genShowManual()">Manual Input</button>
+                    <button onclick="genShowClaude()">Generate with Claude</button>
+                </div>
+                <div id="gen-claude-panel" style="display:none; margin-top:0.5rem">
+                    <div class="setting-row">
+                        <label for="gen-topic">Topic / Scenario</label>
+                        <textarea id="gen-topic" rows="3">financial advisor meeting with a client</textarea>
+                    </div>
+                    <div class="setting-row">
+                        <label for="gen-speakers-input">Speaker Names (optional)</label>
+                        <input type="text" id="gen-speakers-input" placeholder="John, Alice">
+                    </div>
+                    <button onclick="genRunClaude()" id="gen-claude-btn">Generate Transcript</button>
+                    <div id="gen-claude-status" style="margin-top:0.5rem"></div>
+                </div>
+            </div>
+
+            <!-- Step 2: Edit -->
+            <div id="gen-step-2" style="display:none">
+                <textarea id="gen-transcript" rows="15" placeholder="John: Hello, how are you?&#10;Alice: I'm doing well, thanks!"></textarea>
+                <div id="gen-speakers-info"></div>
+                <div id="gen-speaker-mapping" style="display:none; margin-top:0.5rem"></div>
+                <div class="control-row" style="margin-top:0.5rem">
+                    <button onclick="genBackToStep1()">Back</button>
+                    <button onclick="genProceedToTTS()">Continue to TTS</button>
+                </div>
+            </div>
+
+            <!-- Step 3: TTS -->
+            <div id="gen-step-3" style="display:none">
+                <div class="setting-row">
+                    <label for="gen-provider">TTS Provider</label>
+                    <select id="gen-provider">
+                        <option value="deepgram">Deepgram</option>
+                        <option value="elevenlabs">ElevenLabs</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label for="gen-speed">Speech Speed</label>
+                    <input type="number" id="gen-speed" value="1.2" step="0.1" min="0.5" max="2.0">
+                </div>
+                <div class="setting-row">
+                    <label for="gen-gap-min">Gap Min (s)</label>
+                    <input type="number" id="gen-gap-min" value="0.1" step="0.1" min="0">
+                </div>
+                <div class="setting-row">
+                    <label for="gen-gap-max">Gap Max (s)</label>
+                    <input type="number" id="gen-gap-max" value="1.0" step="0.1" min="0">
+                </div>
+                <div id="gen-tts-speakers-summary"></div>
+                <div class="control-row" style="margin-top:0.5rem">
+                    <button onclick="genBackToStep2()">Back</button>
+                    <button onclick="genStartTTS()" id="gen-tts-btn">Generate Audio</button>
+                    <button onclick="genCancelTTS()" id="gen-cancel-btn" style="display:none">Cancel</button>
+                </div>
+                <div id="gen-progress" style="display:none; margin-top:0.5rem">
+                    <div class="progress-container">
+                        <div id="gen-progress-bar" class="progress-bar"></div>
+                    </div>
+                    <span id="gen-progress-text" class="progress-text">0 / 0 turns</span>
+                </div>
+                <div id="gen-result" style="display:none; margin-top:0.5rem"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="conversation-ready" style="display:none">
+        <h2>Conversation Mode</h2>
+        <p class="status-on">Virtual Mic 1 and Virtual Mic 2 are ready — assign them in your browser tabs now.</p>
+        <div class="control-row">
+            <select id="conversation-select-ready"></select>
+            <button onclick="startConversationFromReady()">Start Conversation</button>
+            <button onclick="unprepareConversation()">Release Mics</button>
+        </div>
+    </section>
+
+    <section id="conversation-playing" style="display:none">
+        <h2>Conversation <span id="conv-turn-info" style="font-size:0.85rem;color:#888;font-weight:normal"></span></h2>
+        <div id="conv-turn-list" class="conv-turn-list"></div>
+        <div class="progress-container">
+            <div id="conv-progress-bar" class="progress-bar"></div>
+        </div>
+        <span id="conv-progress-time" class="progress-text">0:00 / 0:00</span>
+        <div class="control-row" style="margin-top:0.5rem">
+            <button onclick="stopConversation()">Stop Conversation</button>
+        </div>
+    </section>
+
+    <section id="now-playing" style="display:none">
+        <h2>Now Playing</h2>
+        <p id="now-playing-file"></p>
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <span id="progress-time">0:00 / 0:00</span>
+        <div id="speed-controls" class="control-row"></div>
+        <button onclick="stopPlayback()">Stop</button>
+    </section>
+
+    <section id="settings">
+        <h2>Settings <button id="settings-toggle" onclick="toggleSettings()" class="settings-toggle-btn">▼</button></h2>
+        <div id="settings-panel" style="display:none">
+            <form id="settings-form" onsubmit="event.preventDefault(); saveConfig();">
+                <h3>General</h3>
+                <div class="setting-row">
+                    <label for="cfg-samples-dir">Samples Directory</label>
+                    <input type="text" id="cfg-samples-dir">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-default-volume">Default Volume (%)</label>
+                    <input type="number" id="cfg-default-volume" min="0" max="500">
+                </div>
+
+                <h3>Audio</h3>
+                <div class="setting-row">
+                    <label for="cfg-sample-rate">Sample Rate (Hz)</label>
+                    <input type="number" id="cfg-sample-rate" min="8000" max="192000">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-channels">Channels</label>
+                    <select id="cfg-channels">
+                        <option value="1">1 (Mono)</option>
+                        <option value="2">2 (Stereo)</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-speeds">Allowed Speeds</label>
+                    <input type="text" id="cfg-speeds" placeholder="0.5, 0.75, 1.0, 1.25, 1.5, 2.0">
+                </div>
+
+                <h3>Conversation</h3>
+                <div class="setting-row">
+                    <label for="cfg-tts-provider">TTS Provider</label>
+                    <select id="cfg-tts-provider">
+                        <option value="deepgram">Deepgram</option>
+                        <option value="elevenlabs">ElevenLabs</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-gap-min">Default Gap Min (s)</label>
+                    <input type="number" id="cfg-gap-min" min="0" step="0.1">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-gap-max">Default Gap Max (s)</label>
+                    <input type="number" id="cfg-gap-max" min="0" step="0.1">
+                </div>
+
+                <h3>Devices</h3>
+                <div class="setting-row">
+                    <label for="cfg-sink-name">Virtual Sink</label>
+                    <input type="text" id="cfg-sink-name">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-mic-name">Virtual Mic</label>
+                    <input type="text" id="cfg-mic-name">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-conv-sink1">Conv. Sink 1</label>
+                    <input type="text" id="cfg-conv-sink1">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-conv-sink2">Conv. Sink 2</label>
+                    <input type="text" id="cfg-conv-sink2">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-conv-mic1">Conv. Mic 1</label>
+                    <input type="text" id="cfg-conv-mic1">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-conv-mic2">Conv. Mic 2</label>
+                    <input type="text" id="cfg-conv-mic2">
+                </div>
+
+                <h3>Server <span class="hint">(requires restart)</span></h3>
+                <div class="setting-row">
+                    <label for="cfg-host">Host</label>
+                    <input type="text" id="cfg-host">
+                </div>
+                <div class="setting-row">
+                    <label for="cfg-port">Port</label>
+                    <input type="number" id="cfg-port" min="1" max="65535">
+                </div>
+
+                <div class="control-row" style="margin-top:1rem">
+                    <button type="submit">Save Settings</button>
+                    <span id="settings-status"></span>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

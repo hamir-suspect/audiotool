@@ -1,0 +1,358 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    background: #1a1a2e;
+    color: #eee;
+}
+
+h1 { margin-bottom: 1.5rem; }
+h2 { margin-bottom: 0.75rem; font-size: 1.1rem; color: #aaa; }
+
+section {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+select, button, input[type="range"] {
+    font-size: 0.9rem;
+}
+
+select {
+    padding: 0.4rem;
+    border-radius: 4px;
+    background: #0f3460;
+    color: #eee;
+    border: 1px solid #333;
+}
+
+button {
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    border: none;
+    background: #e94560;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover { background: #c73a52; }
+button:disabled { background: #555; cursor: not-allowed; }
+
+.status-on { color: #4ecca3; font-weight: bold; }
+.status-off { color: #888; }
+
+input[type="range"] { flex: 1; }
+
+#file-list {
+    list-style: none;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#file-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #1a1a2e;
+}
+
+#file-list li span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    margin-right: 0.5rem;
+}
+
+.progress-container {
+    background: #0f3460;
+    border-radius: 4px;
+    height: 8px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: #e94560;
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s linear;
+}
+
+#progress-time {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.speed-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+    background: #0f3460;
+}
+
+.speed-btn.active {
+    background: #e94560;
+}
+
+.speed-btn:hover:not(:disabled) {
+    background: #c73a52;
+}
+
+.speaker-indicator {
+    font-weight: bold;
+}
+
+.speaker-1 {
+    color: #4ecca3;
+}
+
+.speaker-2 {
+    color: #e94560;
+}
+
+/* --- Conversation turn list --- */
+
+.conv-turn-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 0.5rem;
+    scroll-behavior: smooth;
+}
+
+.conv-turn-item {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    opacity: 0.5;
+    transition: opacity 0.3s, background 0.3s;
+}
+
+.conv-turn-item.active {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.conv-turn-item.done {
+    opacity: 0.35;
+}
+
+.conv-turn-item .conv-turn-speaker {
+    font-weight: bold;
+    margin-right: 0.3rem;
+}
+
+.conv-turn-item .conv-turn-text {
+    color: #ccc;
+}
+
+.conv-turn-item .conv-turn-file {
+    color: #666;
+    font-size: 0.75rem;
+}
+
+/* --- Settings --- */
+
+#settings h3 {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #1a1a2e;
+    padding-bottom: 0.25rem;
+}
+
+#settings h3:first-of-type {
+    margin-top: 0;
+}
+
+.settings-toggle-btn {
+    background: none;
+    color: #888;
+    padding: 0 0.4rem;
+    font-size: 0.8rem;
+}
+
+.settings-toggle-btn:hover {
+    background: none;
+    color: #eee;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.setting-row label {
+    flex: 0 0 160px;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.setting-row input[type="text"],
+.setting-row input[type="number"] {
+    flex: 1;
+    padding: 0.35rem 0.5rem;
+    border-radius: 4px;
+    background: #0f3460;
+    color: #eee;
+    border: 1px solid #333;
+    font-size: 0.85rem;
+}
+
+.setting-row select {
+    flex: 1;
+}
+
+.hint {
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: normal;
+}
+
+.settings-status {
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+}
+
+.settings-status.ok {
+    color: #4ecca3;
+}
+
+.settings-status.error {
+    color: #e94560;
+}
+
+/* --- Generate Conversation --- */
+
+.toggle-btn {
+    background: none;
+    color: #888;
+    padding: 0 0.4rem;
+    font-size: 0.8rem;
+}
+
+.toggle-btn:hover {
+    background: none;
+    color: #eee;
+}
+
+.step-indicator {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.step-pill {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    background: #0f3460;
+    color: #888;
+}
+
+.step-pill.active {
+    background: #e94560;
+    color: white;
+}
+
+.step-pill.done {
+    background: #4ecca3;
+    color: #1a1a2e;
+}
+
+#gen-transcript {
+    width: 100%;
+    font-family: monospace;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background: #0f3460;
+    color: #eee;
+    border: 1px solid #333;
+    resize: vertical;
+}
+
+#gen-topic {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background: #0f3460;
+    color: #eee;
+    border: 1px solid #333;
+    resize: vertical;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.setting-row textarea {
+    flex: 1;
+}
+
+#gen-speakers-info {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-top: 0.5rem;
+}
+
+#gen-speaker-mapping .mapping-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.85rem;
+}
+
+#gen-speaker-mapping .mapping-row label {
+    flex: 0 0 120px;
+    color: #eee;
+}
+
+#gen-speaker-mapping .mapping-row select {
+    font-size: 0.85rem;
+}
+
+#gen-tts-speakers-summary {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-top: 0.5rem;
+}
+
+.progress-text {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+#gen-result.success {
+    color: #4ecca3;
+    font-size: 0.85rem;
+}
+
+#gen-result.error {
+    color: #e94560;
+    font-size: 0.85rem;
+}
+
+#gen-claude-status {
+    font-size: 0.85rem;
+    color: #aaa;
+    white-space: pre-wrap;
+    font-family: monospace;
+    max-height: 200px;
+    overflow-y: auto;
+}
