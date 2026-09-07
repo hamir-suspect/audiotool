@@ -7,7 +7,7 @@ PIP      := $(VENV)/bin/pip
 SYSTEM_DEPS_zypper  = ffmpeg pipewire pipewire-pulseaudio pulseaudio-utils
 SYSTEM_DEPS_apt     = ffmpeg pipewire pipewire-pulse pulseaudio-utils
 SYSTEM_DEPS_dnf     = ffmpeg pipewire pipewire-pulseaudio pulseaudio-utils
-SYSTEM_DEPS_brew    = ffmpeg blackhole-2ch
+SYSTEM_DEPS_brew    = ffmpeg blackhole-2ch blackhole-16ch
 
 $(VENV)/bin/activate:
 	python3 -m venv $(VENV)
