@@ -8,6 +8,7 @@ from pathlib import Path
 CONFIG_PATH = Path(__file__).parent / "config.json"
 
 _IS_WINDOWS = platform.system() == "Windows"
+_IS_MACOS = platform.system() == "Darwin"
 
 DEFAULTS = {
     "samples_dir": os.environ.get("SAMPLES_DIR", str(Path.home() / "Documents" / "samples")),
@@ -31,6 +32,15 @@ if _IS_WINDOWS:
         "conversation_sink2_name": os.environ.get("VIRTUAL_SINK2_DEVICE", "CABLE-B Input (VB-Audio Virtual Cable B)"),
         "conversation_mic1_name": os.environ.get("VIRTUAL_MIC1_DEVICE", "CABLE-A Output (VB-Audio Virtual Cable A)"),
         "conversation_mic2_name": os.environ.get("VIRTUAL_MIC2_DEVICE", "CABLE-B Output (VB-Audio Virtual Cable B)"),
+    })
+elif _IS_MACOS:
+    DEFAULTS.update({
+        "virtual_sink_name": os.environ.get("VIRTUAL_SINK_DEVICE", "BlackHole 2ch"),
+        "virtual_mic_name": os.environ.get("VIRTUAL_MIC_DEVICE", "BlackHole 2ch"),
+        "conversation_sink1_name": os.environ.get("VIRTUAL_SINK1_DEVICE", "BlackHole 2ch"),
+        "conversation_sink2_name": os.environ.get("VIRTUAL_SINK2_DEVICE", "BlackHole 16ch"),
+        "conversation_mic1_name": os.environ.get("VIRTUAL_MIC1_DEVICE", "BlackHole 2ch"),
+        "conversation_mic2_name": os.environ.get("VIRTUAL_MIC2_DEVICE", "BlackHole 16ch"),
     })
 else:
     DEFAULTS.update({

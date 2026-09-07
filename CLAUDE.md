@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Audio Router — a FastAPI web app for managing virtual audio devices and simulating multi-participant conversations. Used to test video conferencing apps (Google Meet, Zoom) by routing audio through virtual microphones. Supports Linux (PipeWire/PulseAudio) and Windows (VB-Cable + sounddevice).
+Audio Router — a FastAPI web app for managing virtual audio devices and simulating multi-participant conversations. Used to test video conferencing apps (Google Meet, Zoom) by routing audio through virtual microphones. Supports Linux (PipeWire/PulseAudio), Windows (VB-Cable + sounddevice), and macOS (BlackHole + sounddevice).
 
 ## Commands
 
 ```bash
-make install          # Install system deps (ffmpeg, pipewire, pulseaudio-utils) + check Python packages
+make install          # Create venv, install Python deps + system deps (Linux: ffmpeg, pipewire, pulseaudio-utils; macOS: ffmpeg, BlackHole via brew)
 make run              # Start uvicorn on host/port from config.json
 make test             # Run full test suite
 python3 -m pytest tests/test_app.py -v          # Run a single test file
@@ -27,7 +27,7 @@ API keys (ELEVENLABS_API_KEY, DEEPGRAM_API_KEY) are loaded from `.env`.
 
 State changes broadcast to the frontend via **Server-Sent Events** (`/api/status`). Single-mic loopback and conversation mode are mutually exclusive — starting one cancels the other.
 
-**Audio backend** (`audio/`): Abstract `AudioBackend` interface (`base.py`) with platform implementations. Linux uses `pw-loopback`, `pactl`, `paplay`, `ffmpeg` subprocesses. Windows uses VB-Cable + `sounddevice`. Backend is selected at import time in `audio/__init__.py`.
+**Audio backend** (`audio/`): Abstract `AudioBackend` interface (`base.py`) with platform implementations. Linux uses `pw-loopback`, `pactl`, `paplay`, `ffmpeg` subprocesses. Windows uses VB-Cable + `sounddevice`. macOS uses BlackHole + `sounddevice`. Backend is selected at import time in `audio/__init__.py`.
 
 **TTS** (`tts.py`): Abstract provider interface with ElevenLabs and Deepgram implementations. Voice pools with round-robin assignment per speaker.
 

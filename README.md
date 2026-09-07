@@ -2,7 +2,7 @@
 
 A FastAPI web app for managing virtual audio devices and simulating multi-participant conversations. Used to test video conferencing apps (Google Meet, Zoom) by routing audio through virtual microphones.
 
-Supports Linux (PipeWire/PulseAudio) and Windows (VB-Cable + sounddevice).
+Supports Linux (PipeWire/PulseAudio), Windows (VB-Cable + sounddevice), and macOS (BlackHole + sounddevice).
 
 ## Setup
 
@@ -12,17 +12,15 @@ Supports Linux (PipeWire/PulseAudio) and Windows (VB-Cable + sounddevice).
 
 **Windows:** [VB-Cable](https://vb-audio.com/Cable/) virtual audio driver
 
+**macOS:** ffmpeg, [BlackHole](https://existential.audio/blackhole/) 2ch and 16ch (installed via Homebrew)
+
 ### Install
 
 ```bash
 make install
 ```
 
-This installs system dependencies (Linux) and checks that Python packages are present. Install Python deps with:
-
-```bash
-pip install -r requirements.txt
-```
+This creates a `venv`, installs Python deps into it, and installs system dependencies (Linux via the system package manager, macOS via Homebrew).
 
 ### Environment
 
@@ -65,6 +63,7 @@ audio/                 # Audio backend implementations
   base.py              #   Abstract interface
   linux.py             #   PipeWire/PulseAudio backend
   windows.py           #   VB-Cable/sounddevice backend
+  macos.py             #   BlackHole/sounddevice backend
 static/                # Frontend (vanilla JS + HTML)
 tests/                 # pytest test suite
 ```
